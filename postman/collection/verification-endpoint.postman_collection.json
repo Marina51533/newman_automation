@@ -1,0 +1,581 @@
+{
+	"info": {
+		"_postman_id": "a05f6804-c604-4f86-abb7-86491ad7c862",
+		"name": "Verification endpoint",
+		"description": "# Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n##  Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16443284",
+		"_collection_link": "https://speeding-crescent-63139.postman.co/workspace/DU~948b2cbc-78fd-42c6-8951-583622d11f78/collection/16443284-a05f6804-c604-4f86-abb7-86491ad7c862?action=share&source=collection_link&creator=16443284"
+	},
+	"item": [
+		{
+			"name": "happy path",
+			"item": [
+				{
+					"name": "hp - search / WEB / premium",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"",
+									"// Removed duplicate declaration of json",
+									"pm.test(\"Status code is 200\", () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"JSON-RPC response has expected structure\", () => {",
+									"  pm.expect(json).to.have.property(\"jsonrpc\", \"2.0\");",
+									"  pm.expect(json).to.have.property(\"id\");",
+									"  pm.expect(json).to.have.property(\"result\");",
+									"  pm.expect(json.result).to.have.property(\"data\");",
+									"});",
+									"",
+									"const responseData = json.result?.data;",
+									"",
+									"pm.test(\"Layout root fields are valid\", () => {",
+									"  pm.expect(responseData).to.have.property(\"id\").that.is.a(\"string\");",
+									"  pm.expect(responseData).to.have.property(\"name\").that.is.a(\"string\");",
+									"  pm.expect(responseData).to.have.property(\"adPositions\").that.is.an(\"array\");",
+									"  pm.expect(responseData).to.have.property(\"dimensions\").that.is.an(\"object\");",
+									"  pm.expect(responseData).to.have.property(\"layoutBlocks\").that.is.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"layoutBlocks are ordered by position\", () => {",
+									"  const positions = responseData.layoutBlocks.map(block => block.position);",
+									"  const sorted = [...positions].sort((a, b) => a - b);",
+									"  pm.expect(positions).to.eql(sorted);",
+									"});",
+									"",
+									"pm.test(\"Each layoutBlock has required fields\", () => {",
+									"  responseData.layoutBlocks.forEach((block) => {",
+									"    pm.expect(block).to.have.property(\"id\").that.is.a(\"string\");",
+									"    pm.expect(block).to.have.property(\"hideWhenEmpty\").that.is.a(\"boolean\");",
+									"    pm.expect(block).to.have.property(\"position\").that.is.a(\"number\");",
+									"    pm.expect(block).to.have.property(\"stripData\").that.is.an(\"object\");",
+									"  });",
+									"});",
+									"",
+									"pm.test(\"Each stripData has required fields and valid enums\", () => {",
+									"  const displayTypes = [\"banner\", \"default\", \"hero\", \"landscape\", \"portrait\", \"static\"];",
+									"  const stripTypes = [",
+									"    \"heroStrip\",",
+									"    \"defaultStrip\",",
+									"    \"bannerStrip\",",
+									"    \"genreStrip\",",
+									"    \"channelStrip\",",
+									"    \"liveBroadcastStrip\",",
+									"    \"topItemsStrip\"",
+									"  ];",
+									"",
+									"  responseData.layoutBlocks.forEach((block) => {",
+									"    const strip = block.stripData;",
+									"",
+									"    pm.expect(strip).to.have.property(\"id\").that.is.a(\"string\");",
+									"    pm.expect(strip).to.have.property(\"name\").that.is.a(\"string\");",
+									"    pm.expect(strip).to.have.property(\"title\").that.is.a(\"string\");",
+									"",
+									"    if (strip.displayType !== null) {",
+									"      pm.expect(displayTypes).to.include(strip.displayType);",
+									"    }",
+									"",
+									"    if (strip.stripType !== null) {",
+									"      pm.expect(stripTypes).to.include(strip.stripType);",
+									"    }",
+									"  });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"requestId\", \"search-web-premium\");",
+									"pm.variables.set(\"userLevel\", \"premium\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{requestId}}\",\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"{{method}}\",\n  \"params\": {\n    \"pageSlug\": \"{{pageSlug}}\",\n    \"userLevel\": \"{{userLevel}}\",\n    \"deviceType\": \"{{deviceType}}\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{rpcPath}}",
+							"host": [
+								"{{base_url}}{{rpcPath}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "hp - search / WEB / free",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"",
+									"// Removed duplicate declaration of json",
+									"pm.test(\"Status code is 200\", () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"JSON-RPC response has expected structure\", () => {",
+									"  pm.expect(json).to.have.property(\"jsonrpc\", \"2.0\");",
+									"  pm.expect(json).to.have.property(\"id\");",
+									"  pm.expect(json).to.have.property(\"result\");",
+									"  pm.expect(json.result).to.have.property(\"data\");",
+									"});",
+									"",
+									"const responseData = json.result?.data;",
+									"",
+									"pm.test(\"Layout root fields are valid\", () => {",
+									"  pm.expect(responseData).to.have.property(\"id\").that.is.a(\"string\");",
+									"  pm.expect(responseData).to.have.property(\"name\").that.is.a(\"string\");",
+									"  pm.expect(responseData).to.have.property(\"adPositions\").that.is.an(\"array\");",
+									"  pm.expect(responseData).to.have.property(\"dimensions\").that.is.an(\"object\");",
+									"  pm.expect(responseData).to.have.property(\"layoutBlocks\").that.is.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"layoutBlocks are ordered by position\", () => {",
+									"  const positions = responseData.layoutBlocks.map(block => block.position);",
+									"  const sorted = [...positions].sort((a, b) => a - b);",
+									"  pm.expect(positions).to.eql(sorted);",
+									"});",
+									"",
+									"pm.test(\"Each layoutBlock has required fields\", () => {",
+									"  responseData.layoutBlocks.forEach((block) => {",
+									"    pm.expect(block).to.have.property(\"id\").that.is.a(\"string\");",
+									"    pm.expect(block).to.have.property(\"hideWhenEmpty\").that.is.a(\"boolean\");",
+									"    pm.expect(block).to.have.property(\"position\").that.is.a(\"number\");",
+									"    pm.expect(block).to.have.property(\"stripData\").that.is.an(\"object\");",
+									"  });",
+									"});",
+									"",
+									"pm.test(\"Each stripData has required fields and valid enums\", () => {",
+									"  const displayTypes = [\"banner\", \"default\", \"hero\", \"landscape\", \"portrait\", \"static\"];",
+									"  const stripTypes = [",
+									"    \"heroStrip\",",
+									"    \"defaultStrip\",",
+									"    \"bannerStrip\",",
+									"    \"genreStrip\",",
+									"    \"channelStrip\",",
+									"    \"liveBroadcastStrip\",",
+									"    \"topItemsStrip\"",
+									"  ];",
+									"",
+									"  responseData.layoutBlocks.forEach((block) => {",
+									"    const strip = block.stripData;",
+									"",
+									"    pm.expect(strip).to.have.property(\"id\").that.is.a(\"string\");",
+									"    pm.expect(strip).to.have.property(\"name\").that.is.a(\"string\");",
+									"    pm.expect(strip).to.have.property(\"title\").that.is.a(\"string\");",
+									"",
+									"    if (strip.displayType !== null) {",
+									"      pm.expect(displayTypes).to.include(strip.displayType);",
+									"    }",
+									"",
+									"    if (strip.stripType !== null) {",
+									"      pm.expect(stripTypes).to.include(strip.stripType);",
+									"    }",
+									"  });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"requestId\", \"search-web-free\");",
+									"pm.variables.set(\"userLevel\", \"free\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{requestId}}\",\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"{{method}}\",\n  \"params\": {\n    \"pageSlug\": \"{{pageSlug}}\",\n    \"userLevel\": \"{{userLevel}}\",\n    \"deviceType\": \"{{deviceType}}\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{rpcPath}}",
+							"host": [
+								"{{base_url}}{{rpcPath}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "hp - search / WEB / unregistered",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"",
+									"// Removed duplicate declaration of json",
+									"pm.test(\"Status code is 200\", () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"JSON-RPC response has expected structure\", () => {",
+									"  pm.expect(json).to.have.property(\"jsonrpc\", \"2.0\");",
+									"  pm.expect(json).to.have.property(\"id\");",
+									"  pm.expect(json).to.have.property(\"result\");",
+									"  pm.expect(json.result).to.have.property(\"data\");",
+									"});",
+									"",
+									"const responseData = json.result?.data;",
+									"",
+									"pm.test(\"Layout root fields are valid\", () => {",
+									"  pm.expect(responseData).to.have.property(\"id\").that.is.a(\"string\");",
+									"  pm.expect(responseData).to.have.property(\"name\").that.is.a(\"string\");",
+									"  pm.expect(responseData).to.have.property(\"adPositions\").that.is.an(\"array\");",
+									"  pm.expect(responseData).to.have.property(\"dimensions\").that.is.an(\"object\");",
+									"  pm.expect(responseData).to.have.property(\"layoutBlocks\").that.is.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"layoutBlocks are ordered by position\", () => {",
+									"  const positions = responseData.layoutBlocks.map(block => block.position);",
+									"  const sorted = [...positions].sort((a, b) => a - b);",
+									"  pm.expect(positions).to.eql(sorted);",
+									"});",
+									"",
+									"pm.test(\"Each layoutBlock has required fields\", () => {",
+									"  responseData.layoutBlocks.forEach((block) => {",
+									"    pm.expect(block).to.have.property(\"id\").that.is.a(\"string\");",
+									"    pm.expect(block).to.have.property(\"hideWhenEmpty\").that.is.a(\"boolean\");",
+									"    pm.expect(block).to.have.property(\"position\").that.is.a(\"number\");",
+									"    pm.expect(block).to.have.property(\"stripData\").that.is.an(\"object\");",
+									"  });",
+									"});",
+									"",
+									"pm.test(\"Each stripData has required fields and valid enums\", () => {",
+									"  const displayTypes = [\"banner\", \"default\", \"hero\", \"landscape\", \"portrait\", \"static\"];",
+									"  const stripTypes = [",
+									"    \"heroStrip\",",
+									"    \"defaultStrip\",",
+									"    \"bannerStrip\",",
+									"    \"genreStrip\",",
+									"    \"channelStrip\",",
+									"    \"liveBroadcastStrip\",",
+									"    \"topItemsStrip\"",
+									"  ];",
+									"",
+									"  responseData.layoutBlocks.forEach((block) => {",
+									"    const strip = block.stripData;",
+									"",
+									"    pm.expect(strip).to.have.property(\"id\").that.is.a(\"string\");",
+									"    pm.expect(strip).to.have.property(\"name\").that.is.a(\"string\");",
+									"    pm.expect(strip).to.have.property(\"title\").that.is.a(\"string\");",
+									"",
+									"    if (strip.displayType !== null) {",
+									"      pm.expect(displayTypes).to.include(strip.displayType);",
+									"    }",
+									"",
+									"    if (strip.stripType !== null) {",
+									"      pm.expect(stripTypes).to.include(strip.stripType);",
+									"    }",
+									"  });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"requestId\", \"search-web-unregistered\");",
+									"pm.variables.set(\"userLevel\", \"unregistered\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{requestId}}\",\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"{{method}}\",\n  \"params\": {\n    \"pageSlug\": \"{{pageSlug}}\",\n    \"userLevel\": \"{{userLevel}}\",\n    \"deviceType\": \"{{deviceType}}\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{rpcPath}}",
+							"host": [
+								"{{base_url}}{{rpcPath}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "device types verification",
+			"item": [
+				{
+					"name": "device verification- positive",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const iterationValue = (key) => pm.iterationData.get(key) ?? pm.environment.get(key);",
+									"pm.variables.set(\"requestId\", iterationValue(\"requestId\"));",
+									"pm.variables.set(\"deviceType\", iterationValue(\"deviceType\"));",
+									"pm.variables.set(\"userLevel\", iterationValue(\"userLevel\"));",
+									"pm.variables.set(\"pageSlug\", iterationValue(\"pageSlug\"))"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"const responseData = json.result.data;",
+									"",
+									"pm.test(\"Status is 200\", () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Valid JSON-RPC response\", () => {",
+									"  pm.expect(json.jsonrpc).to.eql(\"2.0\");",
+									"  pm.expect(json).to.have.property(\"result\");",
+									"  pm.expect(responseData).to.have.property(\"layoutBlocks\");",
+									"});",
+									"",
+									"pm.test(\"layoutBlocks is array\", () => {",
+									"  pm.expect(responseData.layoutBlocks).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"layoutBlocks ordered by position\", () => {",
+									"  const positions = responseData.layoutBlocks.map(b => b.position);",
+									"  const sorted = [...positions].sort((a, b) => a - b);",
+									"  pm.expect(positions).to.eql(sorted);",
+									"});",
+									"",
+									"pm.test(\"deviceType consistency (if returned)\", () => {",
+									"  const requested = pm.variables.get(\"deviceType\");",
+									"  const responseDevice = responseData.dimensions.deviceType;",
+									"",
+									"  if (responseDevice !== null) {",
+									"    pm.expect(responseDevice).to.eql(requested);",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Each layoutBlock has required fields\", () => {",
+									"  responseData.layoutBlocks.forEach(block => {",
+									"    pm.expect(block).to.have.property(\"id\");",
+									"    pm.expect(block).to.have.property(\"position\");",
+									"    pm.expect(block).to.have.property(\"stripData\");",
+									"  });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{requestId}}\",\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"{{method}}\",\n  \"params\": {\n    \"pageSlug\": \"{{pageSlug}}\",\n    \"userLevel\": \"{{userLevel}}\",\n    \"deviceType\": \"{{deviceType}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}{{rpcPath}}",
+							"host": [
+								"{{base_url}}{{rpcPath}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalid deviceType - negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"",
+									"pm.test(\"Error response returned\", () => {",
+									"  pm.expect(json).to.have.property(\"error\");",
+									"});",
+									"",
+									"pm.test(\"Error has code and message\", () => {",
+									"  pm.expect(json.error).to.have.property(\"code\");",
+									"  pm.expect(json.error).to.have.property(\"message\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{requestId}}\",\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"{{method}}\",\n  \"params\": {\n    \"pageSlug\": \"{{pageSlug}}\",\n    \"userLevel\": \"{{userLevel}}\",\n    \"deviceType\": \"Invalid device deviceType\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}{{rpcPath}}",
+							"host": [
+								"{{base_url}}{{rpcPath}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					"pm.environment.set(\"requestId\", pm.variables.replaceIn(\"{{$guid}}\"));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://template.postman-echo.com"
+		}
+	]
+}

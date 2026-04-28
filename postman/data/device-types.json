@@ -1,0 +1,32 @@
+[
+  {
+    "requestId": "search-web-premium",
+    "deviceType": "WEB",
+    "userLevel": "premium",
+    "pageSlug": "search"
+  },
+  {
+    "requestId": "search-smart-premium",
+    "deviceType": "SMART",
+    "userLevel": "premium",
+    "pageSlug": "search"
+  },
+  {
+    "requestId": "search-tv-premium",
+    "deviceType": "TV",
+    "userLevel": "premium",
+    "pageSlug": "search"
+  },
+  {
+    "requestId": "search-mobapp-premium",
+    "deviceType": "MOBAPP",
+    "userLevel": "premium",
+    "pageSlug": "search"
+  },
+  {
+    "requestId": "search-vdf-stb-premium",
+    "deviceType": "VDF_STB",
+    "userLevel": "premium",
+    "pageSlug": "search"
+  }
+]
