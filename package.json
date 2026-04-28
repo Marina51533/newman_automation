@@ -1,15 +1,15 @@
 {
   "scripts": {
-    "test:api": "newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -r cli,html --reporter-html-export newman/newman-report.html",
-    "test:api:devices": "newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -d postman/data/device-types.json -r cli,html --reporter-html-export newman/device-types-report.html",
-    "test:api:allure": "newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -r cli,html,allure --reporter-html-export newman/newman-report.html --reporter-allure-resultsDir allure-results && allure generate allure-results --clean -o allure-report",
-    "test:api:devices:allure": "mkdir -p allure-results/devices allure-report/devices && newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -d postman/data/device-types.json -r cli,html,allure --reporter-html-export newman/device-types-report.html --reporter-allure-resultsDir allure-results/devices && allure generate allure-results/devices --clean -o allure-report/devices",
+    "test:api": "newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export newman/newman-report.html",
+    "test:api:devices": "newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -d postman/data/device-types.json -r cli,htmlextra --reporter-htmlextra-export newman/device-types-report.html",
+    "test:api:allure": "newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -r cli,htmlextra,allure --reporter-htmlextra-export newman/newman-report.html --reporter-allure-resultsDir allure-results && allure generate allure-results --clean -o allure-report",
+    "test:api:devices:allure": "mkdir -p allure-results/devices allure-report/devices && newman run postman/collection/verification-endpoint.postman_collection.json -e postman/environment/iprima-prod.postman_environment.json -d postman/data/device-types.json -r cli,htmlextra,allure --reporter-htmlextra-export newman/device-types-report.html --reporter-allure-resultsDir allure-results/devices && allure generate allure-results/devices --clean -o allure-report/devices",
     "allure:open": "allure open allure-report",
     "allure:open:devices": "allure open allure-report/devices"
   },
   "devDependencies": {
     "newman": "^6.2.1",
     "newman-reporter-allure": "^3.7.1",
-    "newman-reporter-html": "^1.0.5"
+    "newman-reporter-htmlextra": "^1.23.1"
   }
 }
